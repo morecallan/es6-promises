@@ -1,3 +1,95 @@
+
 // Use AJAX | Promises to load all 3 JSON files
 // Iterate over all JSON files and match the human with their appropriate pet(s)
 // ES6-ify it all!
+
+$(document).ready(function () {
+	var loadHumans = function () {
+		return new Promise(function(resolve, reject) {
+			$.ajax("./database/humans.JSON")
+			.done(function(data1){
+				resolve(data1.humans);
+			})
+			.fail(function(error1){
+				reject(error1);
+			});
+		});
+	};
+
+	var loadDinos = function () {
+		return new Promise(function(resolve, reject) {
+			$.ajax("./database/dinos.JSON")
+			.done(function(data2){
+				resolve(data2.dinos);
+			})
+			.fail(function(error2){
+				reject(error2);
+			});
+		});
+	};
+
+	var loadDogs = function () {
+		return new Promise(function(resolve, reject) {
+			$.ajax("./database/dogs.JSON")
+			.done(function(data3){
+				resolve(data3.dogs);
+			})
+			.fail(function(error3){
+				reject(error3);
+			});
+		});
+	};
+
+	var loadCats = function () {
+		return new Promise(function(resolve, reject) {
+			$.ajax("./database/cats.JSON")
+			.done(function(data4){
+				resolve(data4.cats);
+			})
+			.fail(function(error4){
+				reject(error4);
+			});
+		});
+	};
+
+	var myHumans = [];
+	var myAnimals = [];
+
+	var checkForTypeMatch = function(human, pet){
+		var interestedInArray = human["interested-in"];
+		var isMatchNumber = interestedInArray.indexOf(pet.type);
+		if (isMatchNumber === -1) {
+			return false;
+		} else {
+			return true;
+		}
+	};
+
+	loadHumans().then(function(humans){
+		humans.forEach(function(human){
+			human.matches = [];
+			myHumans.push(human);
+		});
+		Promise.all([loadDogs(), loadCats(), loadDinos()])
+		.then(function(result){
+			result.forEach(function(xhrResult){
+				xhrResult.forEach(function(animal){
+					myAnimals.push(animal);
+				});
+			});
+
+			for (var i = 0; i < myHumans.length; i++) {
+				for (var j = 0; j < myAnimals.length; j++) {
+					if (checkForTypeMatch(myHumans[i], myAnimals[j])) {
+						myHumans[i].matches.push(myAnimals[j]);
+					}
+				}
+			}
+			console.log(myHumans);
+		});
+	});
+
+
+
+
+});

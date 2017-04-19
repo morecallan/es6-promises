@@ -124,7 +124,13 @@ var writeToDOM = function (humanArray) {
 				}
 			}
 			writeToDOM(myHumans);
+		})
+		.catch(function(animalErrors){
+			console.log(animalErrors);
 		});
+	})
+	.catch(function(humanError){
+		console.log(humanError);
 	});
 
 
